@@ -12,7 +12,7 @@ public class Resources {
             "logo",
             "add",
             "remove",
-            "dir_open",
+            "open_dir",
             "dir"
     };
 
