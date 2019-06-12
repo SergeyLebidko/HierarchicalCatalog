@@ -3,11 +3,11 @@ package hierarchicalcatalog;
 public class CatalogElement {
 
     private Integer id;
-    private Integer type;
+    private ElementType type;
     private Integer parent;
     private String name;
 
-    public CatalogElement(Integer id, Integer type, Integer parent, String name) {
+    public CatalogElement(Integer id, ElementType type, Integer parent, String name) {
         this.id = id;
         this.type = type;
         this.parent = parent;
@@ -18,7 +18,7 @@ public class CatalogElement {
         return id;
     }
 
-    public Integer getType() {
+    public ElementType getType() {
         return type;
     }
 

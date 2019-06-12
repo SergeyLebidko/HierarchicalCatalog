@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 public class MainClass {
 
     private static DBHandler dbHandler;
+    private static Resources resources;
     private static GUI gui;
     private static ActionHandler actionHandler;
 
@@ -18,6 +19,12 @@ public class MainClass {
             JOptionPane.showMessageDialog(null, "Не удалось создать подключение к БД. Ошибка: "+e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        //Получаем доступ к графическим ресурсам
+        resources = new Resources();
+
+        //Создаем класс "логики"
+        actionHandler = new ActionHandler();
 
         //Создаем главное окно
         try {
@@ -32,6 +39,22 @@ public class MainClass {
             return;
         }
 
+    }
+
+    public static DBHandler getDbHandler() {
+        return dbHandler;
+    }
+
+    public static Resources getResources() {
+        return resources;
+    }
+
+    public static GUI getGui() {
+        return gui;
+    }
+
+    public static ActionHandler getActionHandler() {
+        return actionHandler;
     }
 
 }

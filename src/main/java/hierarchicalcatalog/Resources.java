@@ -11,9 +11,13 @@ public class Resources {
     private static final String[] imageNamesList = {
             "logo",
             "add",
+            "add_dir",
             "remove",
             "open_dir",
-            "dir"
+            "dir",
+            "to_up",
+            "to_down",
+            "no_order"
     };
 
     private HashMap<String, Image> imageMap = new HashMap<>();

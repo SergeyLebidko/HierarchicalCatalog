@@ -10,9 +10,15 @@ public class GUI {
 
     private Resources resources;
     private JFrame frm;
+    private CatalogTable catalogTable;
+
+    private JButton addBtn;
+    private JButton addDirBtn;
+    private JButton removeBtn;
 
     public GUI() {
-        resources = new Resources();
+        resources = MainClass.getResources();
+
         frm = new JFrame("Hierarchical Catalog");
         frm.setIconImage(resources.getImage("logo"));
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,6 +31,37 @@ public class GUI {
         JPanel contentPane = new JPanel(new BorderLayout(5, 5));
         frm.setContentPane(contentPane);
 
+        JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        toolBar.setFloatable(false);
+        contentPane.add(toolBar, BorderLayout.NORTH);
+
+        addDirBtn = new JButton(resources.getImageIcon("add_dir"));
+        addDirBtn.setToolTipText("Добавить группу");
+        toolBar.add(addDirBtn);
+        toolBar.add(Box.createHorizontalStrut(3));
+
+        addBtn = new JButton(resources.getImageIcon("add"));
+        addBtn.setToolTipText("Добавить элемент каталога");
+        toolBar.add(addBtn);
+        toolBar.add(Box.createHorizontalStrut(3));
+
+        removeBtn = new JButton(resources.getImageIcon("remove"));
+        removeBtn.setToolTipText("Удалить");
+        toolBar.add(removeBtn);
+
+        catalogTable = new CatalogTable();
+
+        //Внедряем в класс логики объект, который будет отображать данные
+        MainClass.getActionHandler().setCatalogTable(catalogTable);
+
+        //И сразу же даем команду отобразить корневой каталог справочника
+        MainClass.getActionHandler().showElements(null);
+
+        frm.add(catalogTable.getVisualComponent(), BorderLayout.CENTER);
+
         frm.setVisible(true);
     }
+
+
 }
