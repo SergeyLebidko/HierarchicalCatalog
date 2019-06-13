@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -16,10 +17,10 @@ import static hierarchicalcatalog.ElementType.*;
 
 public class CatalogTable {
 
-    private static final Font mainFont = new Font("Arial", Font.PLAIN, 14);
+    private static final Font mainFont = new Font("Arial", Font.PLAIN, 16);
     private static final Color gridColor = Color.LIGHT_GRAY;
     private static final Color headerColor = new Color(230, 230, 230);
-    private static final int ROW_HEIGHT = 20;
+    private static final int ROW_HEIGHT = 28;
 
     private ActionHandler actionHandler;
     private int sortColumn;
@@ -45,13 +46,6 @@ public class CatalogTable {
                 Integer id2 = o2.getId();
                 return sortOrder.getMul() * id1.compareTo(id2);
             }
-            if (sortColumn == 1) {
-                ElementType type1 = o1.getType();
-                ElementType type2 = o2.getType();
-                Integer n1 = type1.ordinal();
-                Integer n2 = type2.ordinal();
-                return sortOrder.getMul() * n1.compareTo(n2);
-            }
             if (sortColumn == 2) {
                 String name1 = o1.getName();
                 String name2 = o2.getName();
@@ -74,7 +68,37 @@ public class CatalogTable {
 
         public void refresh() {
             if (content == null) return;
-            content.sort(elementComparator);
+
+            ArrayList<CatalogElement> dirs = new ArrayList<>();
+            ArrayList<CatalogElement> elements = new ArrayList<>();
+
+            for (CatalogElement element: content){
+                if (element.getType()==DIR){
+                    dirs.add(element);
+                    continue;
+                }
+                if (element.getType()==ELEMENT){
+                    elements.add(element);
+                }
+            }
+            content.clear();
+            dirs.sort(elementComparator);
+            elements.sort(elementComparator);
+
+            if (sortColumn==1){
+                if (sortOrder==TO_UP){
+                    content.addAll(dirs);
+                    content.addAll(elements);
+                }
+                if (sortOrder==TO_DOWN){
+                    content.addAll(elements);
+                    content.addAll(dirs);
+                }
+            }else{
+                content.addAll(dirs);
+                content.addAll(elements);
+            }
+
             rowCount = content.size();
             if (rootElement != null) {
                 rowCount++;
@@ -133,7 +157,7 @@ public class CatalogTable {
                     }
                 }
                 if (element.getType() == ELEMENT) {
-                    lab.setIcon(null);
+                    lab.setIcon(resources.getImageIcon("element"));
                 }
             }
             if (column == 2) {
@@ -217,7 +241,6 @@ public class CatalogTable {
         contentPane.add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
-
     public JPanel getVisualComponent() {
         return contentPane;
     }
@@ -229,6 +252,18 @@ public class CatalogTable {
             content = list;
         }
         model.refresh();
+    }
+
+    public CatalogElement getRootElement() {
+        return rootElement;
+    }
+
+    public CatalogElement getSelectedeElement() {
+        int selectedeRow = table.getSelectedRow();
+        if (selectedeRow == (-1)) return null;
+        CatalogElement selectedElement = (CatalogElement) model.getValueAt(selectedeRow, 0);
+        if (selectedElement == rootElement) return null;
+        return selectedElement;
     }
 
     private void revertSortOrder() {
@@ -264,8 +299,36 @@ public class CatalogTable {
             if (e.getClickCount() == 2 & e.getButton() == MouseEvent.BUTTON1) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow == (-1)) return;
+                CatalogElement selectedElement = (CatalogElement) model.getValueAt(selectedRow, 0);
 
-                System.out.println("Щелчок по строке " + selectedRow);
+                if (selectedElement == rootElement) {
+                    if (rootElement.getParent() == 0) {
+                        rootElement = null;
+                        actionHandler.showElements(rootElement);
+                        return;
+                    }
+                    if (rootElement.getParent() != 0) {
+                        try {
+                            rootElement = actionHandler.getElement(rootElement.getParent());
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(null, "Не удалось получить список элементов. Ошибка: " + ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        actionHandler.showElements(rootElement);
+                        return;
+                    }
+                }
+
+                if (selectedElement.getType() == DIR) {
+                    rootElement = selectedElement;
+                    actionHandler.showElements(rootElement);
+                    return;
+                }
+
+                if (selectedElement.getType() == ELEMENT) {
+                    JOptionPane.showMessageDialog(null, selectedElement.getName(), "", JOptionPane.PLAIN_MESSAGE);
+                }
+
             }
         }
     };

@@ -25,6 +25,7 @@ public class MainClass {
 
         //Создаем класс "логики"
         actionHandler = new ActionHandler();
+        actionHandler.setDbHandler(dbHandler);
 
         //Создаем главное окно
         try {
@@ -47,10 +48,6 @@ public class MainClass {
 
     public static Resources getResources() {
         return resources;
-    }
-
-    public static GUI getGui() {
-        return gui;
     }
 
     public static ActionHandler getActionHandler() {

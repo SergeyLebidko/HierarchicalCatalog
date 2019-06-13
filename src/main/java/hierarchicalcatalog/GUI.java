@@ -2,6 +2,9 @@ package hierarchicalcatalog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+
+import static hierarchicalcatalog.ElementType.*;
 
 public class GUI {
 
@@ -9,6 +12,8 @@ public class GUI {
     private static final int FRM_HEIGHT = 800;
 
     private Resources resources;
+    private ActionHandler actionHandler;
+    private  DBHandler dbHandler;
     private JFrame frm;
     private CatalogTable catalogTable;
 
@@ -18,6 +23,8 @@ public class GUI {
 
     public GUI() {
         resources = MainClass.getResources();
+        actionHandler = MainClass.getActionHandler();
+        dbHandler = MainClass.getDbHandler();
 
         frm = new JFrame("Hierarchical Catalog");
         frm.setIconImage(resources.getImage("logo"));
@@ -52,6 +59,11 @@ public class GUI {
 
         catalogTable = new CatalogTable();
 
+        addDirBtn.addActionListener(addDirBtnListener);
+        addBtn.addActionListener(addBtnListener);
+        removeBtn.addActionListener(removeBtnListener);
+        frm.addWindowListener(frmCloseListener);
+
         //Внедряем в класс логики объект, который будет отображать данные
         MainClass.getActionHandler().setCatalogTable(catalogTable);
 
@@ -63,5 +75,32 @@ public class GUI {
         frm.setVisible(true);
     }
 
+    private ActionListener addBtnListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actionHandler.addElement(ELEMENT);
+        }
+    };
+
+    private ActionListener addDirBtnListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actionHandler.addElement(DIR);
+        }
+    };
+
+    private ActionListener removeBtnListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            actionHandler.removeElement();
+        }
+    };
+
+    private WindowListener frmCloseListener = new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent e) {
+            dbHandler.dispose();
+        }
+    };
 
 }

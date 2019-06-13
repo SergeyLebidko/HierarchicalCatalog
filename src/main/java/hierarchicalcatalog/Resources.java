@@ -17,7 +17,8 @@ public class Resources {
             "dir",
             "to_up",
             "to_down",
-            "no_order"
+            "no_order",
+            "element"
     };
 
     private HashMap<String, Image> imageMap = new HashMap<>();
